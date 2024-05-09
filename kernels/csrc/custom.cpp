@@ -1,4 +1,5 @@
 #include <torch/extension.h>
+#include <ATen/ATen.h>
 #include <ATen/SparseTensorUtils.h>
 
 #include <vector>

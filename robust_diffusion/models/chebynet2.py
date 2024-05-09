@@ -120,6 +120,11 @@ class ChebNetII(torch.nn.Module):
             edge_index = torch.stack([row, col], dim=0)
         elif isinstance(adj, tuple):
             edge_index, edge_weight = adj
+        elif isinstance(adj, torch.Tensor):
+            adj_coalesce = adj.coalesce()
+            edge_index = adj_coalesce.indices()
+            edge_weight = adj_coalesce.values()
+            # import pdb; pdb.set_trace()
 
         x = F.dropout(data, p=self.dropout, training=self.training)
         x = self.lin1(x)

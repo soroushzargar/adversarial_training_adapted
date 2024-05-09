@@ -55,6 +55,11 @@ class GAT(torch.nn.Module):
             edge_index = torch.stack([row, col], dim=0)
         elif isinstance(adj, tuple):
             edge_index, edge_weight = adj
+        elif isinstance(adj, Tensor):
+            adj_coalesce = adj.coalesce()
+            edge_index = adj_coalesce.indices()
+            edge_weight = adj_coalesce.values()
+            # import pdb; pdb.set_trace()
 
         data = self.conv1(data, edge_index, edge_weight).relu()
         data = F.dropout(data, p=self.dropout, training=self.training)

@@ -594,7 +594,7 @@ def soft_median(
 
     distances = torch.norm(x_median[row_index] - x[col_index], dim=1, p=p) / pow(d, 1 / p)
 
-    soft_weights = torch_scatter.composite.scatter_softmax(-distances / temperature, row_index, dim=-1, eps=eps)
+    soft_weights = torch_scatter.composite.scatter_softmax(-distances / temperature, row_index, dim=-1)
     weighted_values = soft_weights * edge_weights
     row_sum_weighted_values = torch_scatter.scatter_add(weighted_values, row_index)
     final_adj_weights = weighted_values / row_sum_weighted_values[row_index] * weight_sums[row_index]

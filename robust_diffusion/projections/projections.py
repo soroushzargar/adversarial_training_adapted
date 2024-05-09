@@ -70,7 +70,10 @@ class BaseProjection():
             return {'global': no_globals, 'gloval_val': (values.sum(), self.global_budget), 'local': no_locals, 'smaller_1': smaller_1, 'larger_0': larger_0}
 
     def get_local_violated_edge_idx(self, node_idx_violated, edge_index):
-        mapping = torch.zeros(self.n).bool()
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        node_idx_violated = node_idx_violated.to(device)
+        edge_index = edge_index.to(device)
+        mapping = torch.zeros(self.n).bool().to(device)
         mapping[node_idx_violated]=True # True at pos of violated nodes
         mask_col = mapping[edge_index[0]] # True if col in violated nodes
         mask_row = mapping[edge_index[1]] # True if row in violated nodes
@@ -113,6 +116,7 @@ class GreedyKnapsackProjection(BaseProjection):
 
     def greedy_knapsack(self, values, cost, edge_index):
         # sort everything by value descending
+        device= "cuda" if torch.cuda.is_available() else "cpu"
         order = torch.argsort(-values)
         values = values[order]
         cost = cost[order]
@@ -125,7 +129,7 @@ class GreedyKnapsackProjection(BaseProjection):
         # get local violations
         node_idx, _ = self.get_local_violated_node_idx(cost, edge_index)
         edge_mask_or, edge_mask_and = self.get_local_violated_edge_idx(node_idx, edge_index)
-        edge_idx_or = torch.arange(len(cost))[edge_mask_or] # idx of cost corresponding to violated edges
+        edge_idx_or = torch.arange(len(cost)).to(device)[edge_mask_or.to(device)] # idx of cost corresponding to violated edges
 
         # enforce local budget
         if edge_idx_or.shape[0] > 0:

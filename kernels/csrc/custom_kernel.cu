@@ -1,4 +1,5 @@
 #include <torch/extension.h>
+#include <ATen/ATen.h>
 
 #include <ATen/cuda/CUDAUtils.h>
 #include <ATen/SparseTensorUtils.h>
@@ -231,8 +232,8 @@ at::Tensor dimmedian_idx_forward_cuda(
     const int n_rows,
     const int n_threads = 1024)
 {
-    torch::Tensor X_argsort = X.argsort(0).to(torch::kInt32);
-    torch::Tensor X_rev_argsort = X_argsort.argsort(0).to(torch::kInt32);
+    torch::Tensor X_argsort = X.argsort(0, false).to(torch::kInt32);
+    torch::Tensor X_rev_argsort = X_argsort.argsort(0, false).to(torch::kInt32);
 
     int64_t d = X.size(1);
     torch::Tensor values = edge_weights.to(torch::kFloat32);

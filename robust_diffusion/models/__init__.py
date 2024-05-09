@@ -8,6 +8,7 @@ from robust_diffusion.models.gprgnn import GPRGNN
 from robust_diffusion.models.gprgnn_dense import DenseGPRGNN
 from robust_diffusion.models.chebynet2 import ChebNetII
 from robust_diffusion.models.gat_weighted import GAT
+from robust_diffusion.models.pprgo import PPRGoWrapperBase
 
 
 MODEL_TYPE = Union[SGC, GCN, DenseGCN, GPRGNN, DenseGPRGNN, ChebNetII, GAT, RGNN]
@@ -51,4 +52,5 @@ __all__ = [GCN,
            ChebNetII,
            RGNN,
            create_model,
+           PPRGoWrapperBase,
            MODEL_TYPE]

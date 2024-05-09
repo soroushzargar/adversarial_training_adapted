@@ -310,6 +310,19 @@ class SparseGraph:
             if ((val is not None) and (None not in val)):
                 init_dict[key] = val
 
+        # CHANGED: This block removes any unnecessary keys from the dictionary
+        needed_keys = ["adj_matrix", "attr_matrix", "labels", "node_names", "attr_names", "class_names", "metadata"]
+        
+        refined_dict = dict()
+        for key in init_dict.keys():
+            if key in needed_keys:
+                refined_dict[key] = init_dict[key]
+            else:
+                # remove the key from the dictionary
+                pass
+        init_dict = refined_dict
+
+        print("I am here, ", list(init_dict.keys()))
         return SparseGraph(**init_dict)
 
 
@@ -448,9 +461,10 @@ def load_dataset(name: str,
     if path_to_file.exists():
         with np.load(path_to_file, allow_pickle=True) as loader:
             loader = dict(loader)
-            del loader['type']
-            del loader['edge_attr_matrix']
-            del loader['edge_attr_names']
+            # del loader['type']
+            # del loader['edge_attr_matrix']
+            # del loader['edge_attr_names']
+            
             dataset = SparseGraph.from_flat_dict(loader)
     else:
         raise ValueError("{} doesn't exist.".format(path_to_file))
@@ -1147,9 +1161,12 @@ class CachedPPRMatrix:
 
 def count_edges_for_idx(adj, idx):
     '''count edges connected to nodes in idx'''
+    device = "cuda" if adj.is_cuda else "cpu"
     row, col, _ = adj.t().coo()
+    row = row.to(device)
+    col = col.to(device)
 
-    mapping = torch.zeros(adj.size(dim=0)).bool()
+    mapping = torch.zeros(adj.size(dim=0)).bool().to(device)
     mapping[idx]=True # True if node in idx
 
     mask_col = mapping[col] # True if col in idx

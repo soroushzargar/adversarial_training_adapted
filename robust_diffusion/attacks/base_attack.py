@@ -92,6 +92,8 @@ class Attack(ABC):
         self.device = device
         self.data_device = data_device
         self.idx_attack = idx_attack
+        if isinstance(idx_attack, torch.Tensor):
+            self.idx_attack = idx_attack.cpu().numpy()
         self.loss_type = loss_type
 
         self.make_undirected = make_undirected
